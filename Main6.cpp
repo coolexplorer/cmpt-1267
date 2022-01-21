@@ -23,71 +23,79 @@ int main(int argc, char* args[])
 	TTF_Init();
 
 	theFont = TTF_OpenFont("Dubai-Regular.ttf", 28);
-		
-	SDL_Color textColor = { 0, 0, 0 };
-	string textureText = "Welcome to the Hotel California, such a lovely place!";
 
-	SDL_Surface* textSurface = TTF_RenderText_Solid(theFont, textureText.c_str(), textColor);
-	newTexture = SDL_CreateTextureFromSurface(theRenderer, textSurface);
-		
-	mWidth = textSurface->w;
-	mHeight = textSurface->h;
-
-	SDL_FreeSurface(textSurface);
-
-	bool Done = false;
-	SDL_Event e;
-	double angle = 45;
-	SDL_Rect* clip = NULL;
-
-	while (!Done)
+	if (theFont == nullptr) 
 	{
-		while (SDL_PollEvent(&e) != 0)
+		cout << "Unable to load the font.";
+	} 
+	else
+	{
+		SDL_Color textColor = { 0, 0, 0 };
+		string textureText = "Welcome to the Hotel California, such a lovely place!";
+
+		SDL_Surface* textSurface = TTF_RenderText_Solid(theFont, textureText.c_str(), textColor);
+		newTexture = SDL_CreateTextureFromSurface(theRenderer, textSurface);
+			
+		mWidth = textSurface->w;
+		mHeight = textSurface->h;
+
+		SDL_FreeSurface(textSurface);
+
+		bool Done = false;
+		SDL_Event e;
+		double angle = 45;
+		SDL_Rect* clip = NULL;
+
+		while (!Done)
 		{
-			if (e.type == SDL_QUIT)
+			while (SDL_PollEvent(&e) != 0)
 			{
-				Done = true;
-			}
-			else if (e.type == SDL_KEYDOWN)
-			{
-				if (e.key.keysym.sym == SDLK_UP)
+				if (e.type == SDL_QUIT)
 				{
-					angle += 5;
-					if (angle >= 360)
+					Done = true;
+				}
+				else if (e.type == SDL_KEYDOWN)
+				{
+					if (e.key.keysym.sym == SDLK_UP)
 					{
-						angle = 0;
+						angle += 5;
+						if (angle >= 360)
+						{
+							angle = 0;
+						}
+					}
+					else if (e.key.keysym.sym == SDLK_DOWN)
+					{
+						angle -= 5;
+						if (angle <= 0)
+						{
+							angle = 360;
+						}
 					}
 				}
-				else if (e.key.keysym.sym == SDLK_DOWN)
-				{
-					angle -= 5;
-					if (angle <= 0)
-					{
-						angle = 360;
-					}
-				}
 			}
+			SDL_SetRenderDrawColor(theRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+			SDL_RenderClear(theRenderer);
+
+			int x = (SCREEN_WIDTH - mWidth) / 2;
+			int y = (SCREEN_HEIGHT - mHeight) / 2;
+
+			
+			SDL_Rect renderQuad = { x, y, mWidth, mHeight };
+
+			if (clip != NULL)
+			{
+				renderQuad.w = clip->w;
+				renderQuad.h = clip->h;
+			}
+
+			
+			SDL_RenderCopyEx(theRenderer, newTexture, clip, &renderQuad, angle, NULL, SDL_FLIP_NONE);
+			SDL_RenderPresent(theRenderer);
 		}
-		SDL_SetRenderDrawColor(theRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-		SDL_RenderClear(theRenderer);
-
-		int x = (SCREEN_WIDTH - mWidth) / 2;
-		int y = (SCREEN_HEIGHT - mHeight) / 2;
-
 		
-		SDL_Rect renderQuad = { x, y, mWidth, mHeight };
-
-		if (clip != NULL)
-		{
-			renderQuad.w = clip->w;
-			renderQuad.h = clip->h;
-		}
-
-		
-		SDL_RenderCopyEx(theRenderer, newTexture, clip, &renderQuad, angle, NULL, SDL_FLIP_NONE);
-		SDL_RenderPresent(theRenderer);
+		delete clip;
 	}
-	delete clip;
 
 	TTF_CloseFont(theFont);
 	theFont = NULL;
