@@ -5,8 +5,8 @@ using namespace std;
 
 const int X_POSITION = 100;
 const int Y_POSITION = 100;
-const int WIDTH = 640;
-const int HEIGHT = 480;
+const int SCREEN_WIDTH = 640;
+const int SCREEN_HEIGHT = 480;
 
 int main(int argc, char* args[])
 {
